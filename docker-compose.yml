@@ -1,0 +1,16 @@
+services:
+  goapi:
+    build: ./GoAPI
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./GoAPI:/app
+    command: ["./main"]
+
+  nodeapi:
+    build: ./nodeapi
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./nodeapi:/app
+    command: ["node", "app.js"]
