@@ -42,14 +42,14 @@ URL: POST http://localhost:3000/login
 Body (JSON):
 
 {
-    "username": "your-username"
+    "username": "your-username"   EN ACTUALIZACION
 }
 Copia el token de la respuesta.
 Rotar una matriz:
 
 URL: POST http://localhost:8080/rotate
 Headers: Authorization: Bearer your-jwt-token
-Body (JSON):
+Body (JSON):  LISTO
 
 {
     "matrix": [
@@ -61,7 +61,7 @@ Calcular estadísticas:
 
 URL: POST http://localhost:3000/stats
 Headers: Authorization: Bearer your-jwt-token
-Body (JSON):
+Body (JSON):  LISTO
 
 {
     "rotatedMatrix": [
