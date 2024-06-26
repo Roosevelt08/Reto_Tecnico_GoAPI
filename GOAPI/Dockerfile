@@ -1,17 +1,23 @@
-# Usar la imagen base oficial de Go
-FROM golang:1.22-alpine
+# Etapa de construcción
+FROM golang:1.20-alpine AS builder
 
-# Establecer el directorio de trabajo dentro del contenedor
 WORKDIR /app
 
-# Copiar el código fuente de Go al directorio de trabajo del contenedor
-COPY . .
-
-# Descargar las dependencias necesarias especificadas en go.mod y go.sum
+COPY go.mod ./
+COPY go.sum ./
 RUN go mod download
 
-# Compilar la aplicación para producir un ejecutable binario
+COPY . .
+
 RUN go build -o main .
 
-# Comando para ejecutar el binario compilado
+# Etapa de producción
+FROM alpine:latest
+
+WORKDIR /root/
+
+COPY --from=builder /app/main .
+
+EXPOSE 8080
+
 CMD ["./main"]
