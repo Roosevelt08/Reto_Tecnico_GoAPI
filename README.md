@@ -73,9 +73,11 @@ Body (JSON):  LISTO
 response:
 
 {
-    "promedio": 4.25,
-    "max": 7,
-    "min": 3
+    "max": 4,
+    "min": 1,
+    "average": 2.5,
+    "sum": 10,
+    "isDiagonal": false
 }
 Paso 4: Ejecutar el Frontend
 
