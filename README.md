@@ -64,10 +64,18 @@ Headers: Authorization: Bearer your-jwt-token
 Body (JSON):  LISTO
 
 {
-    "rotatedMatrix": [
-        [3, 1],
-        [4, 2]
-    ]
+  "rotatedMatrix": [
+    [3, 7],
+    [4, 3]
+  ]
+}
+
+response:
+
+{
+    "promedio": 4.25,
+    "max": 7,
+    "min": 3
 }
 Paso 4: Ejecutar el Frontend
 
