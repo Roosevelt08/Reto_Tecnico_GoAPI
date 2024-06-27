@@ -2,11 +2,11 @@
   <div v-if="statistics">
     <h2>Estadísticas</h2>
     <ul>
-      <li>Valor Máximo: {{ statistics.maxValue }}</li>
-      <li>Valor Mínimo: {{ statistics.minValue }}</li>
+      <li>Valor Máximo: {{ statistics.max }}</li>
+      <li>Valor Mínimo: {{ statistics.min }}</li>
       <li>Promedio: {{ statistics.average }}</li>
-      <li>Suma Total: {{ statistics.totalSum }}</li>
-      <li>Matriz Diagonal: {{ statistics.isDiagonal ? 'Sí' : 'No' }}</li>
+      <li>Suma Total: {{ statistics.sum }}</li>
+      <li>Matriz Diagonal: {{ statistics.diagonal ? 'Sí' : 'No' }}</li>
     </ul>
   </div>
 </template>
@@ -14,17 +14,10 @@
 <script>
 export default {
   props: {
-    statistics: Object
+    statistics: {
+      type: Object,
+      required: true
+    }
   }
 }
 </script>
-
-<style scoped>
-ul {
-  list-style: none;
-  padding: 0;
-}
-li {
-  margin-bottom: 5px;
-}
-</style>

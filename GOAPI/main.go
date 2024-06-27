@@ -46,7 +46,13 @@ func setUpRoutes(app *fiber.App) {
 		}
 
 		rotatedMatrix := rotateMatrix(matrix)
-		return c.JSON(rotatedMatrix)
+		stats := calculateStatistics(matrix)
+		response := fiber.Map{
+			"rotatedMatrix": rotatedMatrix,
+			"statistics":    stats,
+		}
+
+		return c.JSON(response)
 	})
 }
 
@@ -68,6 +74,43 @@ func rotateMatrix(original [][]int) [][]int {
 	}
 
 	return rotated
+}
+
+// Función para calcular estadísticas
+func calculateStatistics(matrix [][]int) map[string]interface{} {
+	maxVal := matrix[0][0]
+	minVal := matrix[0][0]
+	sum := 0
+	count := 0
+	Diagonal := true
+
+	for i := range matrix {
+		for j := range matrix[i] {
+			val := matrix[i][j]
+			if val > maxVal {
+				maxVal = val
+			}
+			if val < minVal {
+				minVal = val
+			}
+			sum += val
+			count++
+			if i != j && val != 0 {
+				Diagonal = false
+			}
+		}
+	}
+
+	promedio := float64(sum) / float64(count)
+	stats := map[string]interface{}{
+		"max":      maxVal,
+		"min":      minVal,
+		"sum":      sum,
+		"promedio": promedio,
+		"diagonal": Diagonal,
+	}
+
+	return stats
 }
 
 // Prueba de la función de rotación de matrices

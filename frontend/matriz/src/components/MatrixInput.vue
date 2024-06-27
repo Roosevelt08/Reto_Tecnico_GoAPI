@@ -1,31 +1,41 @@
 <template>
   <div>
     <h2>Ingresar Matriz</h2>
-    <textarea v-model="matrixInput" rows="10" cols="50"></textarea>
+    <textarea v-model="inputMatrix" rows="5" cols="30"></textarea>
+    <br />
     <button @click="rotateMatrix">Rotar Matriz</button>
   </div>
 </template>
 
 <script>
-import axios from 'axios';
-
 export default {
   data() {
     return {
-      matrixInput: '{"matrix": [[1, 2], [3, 4]]}',
-      rotatedMatrix: null
+      inputMatrix: '{"matrix": [[1, 2], [3, 4]]}',
     };
   },
   methods: {
     async rotateMatrix() {
       try {
-        const response = await axios.post('http://localhost:8080/rotate', JSON.parse(this.matrixInput));
-        this.rotatedMatrix = response.data;
-        console.log(this.rotatedMatrix);
+        const response = await fetch("http://localhost:8080/rotate", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: this.inputMatrix,
+        });
+        const result = await response.json();
+        this.$emit("matrix-rotated", result.rotatedMatrix, result.statistics);
       } catch (error) {
         console.error("Error rotando la matriz:", error);
       }
-    }
-  }
+    },
+  },
 };
 </script>
+
+<style scoped>
+textarea {
+  width: 100%;
+}
+</style>
