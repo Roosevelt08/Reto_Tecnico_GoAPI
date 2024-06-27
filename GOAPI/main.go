@@ -7,48 +7,42 @@ import (
 	"testing"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 )
 
 func main() {
 	app := fiber.New()
+
+	app.Use(cors.New(cors.Config{
+		AllowOrigins: "http://localhost:8081", // Permitir solicitudes desde el frontend
+		AllowHeaders: "Origin, Content-Type, Accept",
+	}))
+
 	app.Use(logger.New()) // Middleware para registrar todas las solicitudes
 
-	// app.Use(cors.New(cors.Config{
-	// 	AllowOrigins: "http://localhost:8081", // Ajusta esto a tu configuración de frontend
-	// 	AllowHeaders: "Origin, Content-Type, Accept",
-	// 	AllowMethods: "GET, POST, HEAD, PUT, DELETE, PATCH",
-	// }))
-
-	// GET básica
-	app.Get("/", func(c *fiber.Ctx) error {
-		return c.SendString("Obtener solicitudes")
-	})
-	// POST para rotar matrices
-	app.Post("/rotate", func(c *fiber.Ctx) error {
-		var data map[string][][]int
-		if err := c.BodyParser(&data); err != nil {
-			log.Println("Error en JSON:", err)
-			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "No se puede analizar la matriz"})
-		}
-		matrix := data["matrix"]
-		rotatedMatrix := rotateMatrix(matrix)
-		return c.JSON(rotatedMatrix)
-	})
+	// Configurar rutas
+	setUpRoutes(app)
 
 	log.Fatal(app.Listen(":8080"))
 }
 
-// POST para rotar matrices
+// Configuración de rutas
 func setUpRoutes(app *fiber.App) {
 	app.Get("/", func(c *fiber.Ctx) error {
 		return c.SendString("rotar matrices")
 	})
 
 	app.Post("/rotate", func(c *fiber.Ctx) error {
-		var matrix [][]int
-		if err := c.BodyParser(&matrix); err != nil {
+		var data map[string][][]int
+		if err := c.BodyParser(&data); err != nil {
+			log.Println("Error en JSON:", err)
 			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "No se puede analizar la matriz"})
+		}
+
+		matrix, exists := data["matrix"]
+		if !exists {
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "No se encuentra la clave matrix"})
 		}
 
 		rotatedMatrix := rotateMatrix(matrix)
@@ -76,6 +70,7 @@ func rotateMatrix(original [][]int) [][]int {
 	return rotated
 }
 
+// Prueba de la función de rotación de matrices
 func TestRotateMatrix(t *testing.T) {
 	original := [][]int{
 		{1, 2},
@@ -91,10 +86,11 @@ func TestRotateMatrix(t *testing.T) {
 	}
 }
 
+// Prueba de la API
 func TestAPI(t *testing.T) {
 	// Setup
 	app := fiber.New()
-	setUpRoutes(app) // Asume que tienes una función que configura las rutas
+	setUpRoutes(app) // Configurar rutas
 
 	// Realizar solicitud
 	req, _ := http.NewRequest("GET", "/", nil)

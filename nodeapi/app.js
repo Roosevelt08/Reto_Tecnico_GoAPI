@@ -1,56 +1,37 @@
 const express = require('express');
 const app = express();
+const bodyParser = require('body-parser');
 
-app.use(express.json()); 
+app.use(bodyParser.json());
 
-app.post('/stats', (req, res) => {
-  const { rotatedMatrix } = req.body;
-  if (!rotatedMatrix || !Array.isArray(rotatedMatrix) || !rotatedMatrix.length) {
-      return res.status(400).json({ error: 'Entrada inválida' });
-  }
-  const stats = calculateStats(rotatedMatrix);
-  res.json(stats);
+app.get('/', (req, res) => {
+  res.send('Hola desde Node.js Roosevelt!');
 });
 
-function calculateStats(matrix) {
-  return {
-      promedio: calculatePromedio(matrix),
-      max: findMax(matrix),
-      min: findMin(matrix)
+app.post('/stats', (req, res) => {
+  const rotatedMatrix = req.body.rotatedMatrix;
+  
+  if (!Array.isArray(rotatedMatrix) || rotatedMatrix.length === 0) {
+    return res.status(400).json({ error: 'matriz no válido' });
+  }
+
+  const flatMatrix = rotatedMatrix.flat();
+  const max = Math.max(...flatMatrix);
+  const min = Math.min(...flatMatrix);
+  const suma = flatMatrix.reduce((acc, num) => acc + num, 0);
+  const promedio = suma / flatMatrix.length;
+  const diagonal = rotatedMatrix.every((row, i) => row.every((value, j) => (i === j) || (value === 0)));
+
+  const stats = {
+    max,
+    min,
+    promedio,
+    suma,
+    diagonal
   };
-}
 
-function calculatePromedio(matrix) {
-  let total = 0;
-  let count = 0;
-  matrix.forEach(row => {
-      row.forEach(value => {
-          total += value;
-          count++;
-      });
-  });
-  return total / count;
-}
-
-function findMax(matrix) {
-  let max = -Infinity;
-  matrix.forEach(row => {
-      row.forEach(value => {
-          if (value > max) max = value;
-      });
-  });
-  return max;
-}
-
-function findMin(matrix) {
-  let min = Infinity;
-  matrix.forEach(row => {
-      row.forEach(value => {
-          if (value < min) min = value;
-      });
-  });
-  return min;
-}
+  res.json(stats);
+});
 
 // Cambia la forma de iniciar el servidor para pruebas
 if (!module.parent) {  // Solo si el módulo no es requerido por otro módulo
