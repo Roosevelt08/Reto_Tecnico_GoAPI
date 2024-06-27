@@ -164,3 +164,16 @@ docker-compose up --build
 
 Esto levantará los servicios definidos en el archivo `docker-compose.yml`.
 
+## Ejecución de Pruebas
+
+### Go
+Para ejecutar las pruebas en Go, usa el siguiente comando en el terminal:
+
+go test
+
+
+### Node.js
+Para ejecutar las pruebas en Node.js, usa el siguiente comando en el terminal dentro del directorio `nodeapi`:
+
+npm test
+
