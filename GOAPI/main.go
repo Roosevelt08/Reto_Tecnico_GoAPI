@@ -15,22 +15,14 @@ func main() {
 	app := fiber.New()
 
 	app.Use(cors.New(cors.Config{
-		AllowOrigins: "http://localhost:8081", // Permitir solicitudes desde el frontend
+		AllowOrigins: "http://localhost:8081",
 		AllowHeaders: "Origin, Content-Type, Accept",
 	}))
 
-	app.Use(logger.New()) // Middleware para registrar todas las solicitudes
+	app.Use(logger.New())
 
-	// Configurar rutas
-	setUpRoutes(app)
-
-	log.Fatal(app.Listen(":8080"))
-}
-
-// Configuración de rutas
-func setUpRoutes(app *fiber.App) {
 	app.Get("/", func(c *fiber.Ctx) error {
-		return c.SendString("rotar matrices")
+		return c.SendString("Obtener solicitudes")
 	})
 
 	app.Post("/rotate", func(c *fiber.Ctx) error {
@@ -47,16 +39,24 @@ func setUpRoutes(app *fiber.App) {
 
 		rotatedMatrix := rotateMatrix(matrix)
 		stats := calculateStatistics(matrix)
-		response := fiber.Map{
+
+		response := map[string]interface{}{
 			"rotatedMatrix": rotatedMatrix,
 			"statistics":    stats,
 		}
 
 		return c.JSON(response)
 	})
+
+	log.Fatal(app.Listen(":8080"))
 }
 
-// Función para rotar la matriz
+func setUpRoutes(app *fiber.App) {
+	app.Get("/", func(c *fiber.Ctx) error {
+		return c.SendString("rotar matrices")
+	})
+}
+
 func rotateMatrix(original [][]int) [][]int {
 	if len(original) == 0 {
 		return original
@@ -69,51 +69,46 @@ func rotateMatrix(original [][]int) [][]int {
 	for i := 0; i < m; i++ {
 		rotated[i] = make([]int, n)
 		for j := 0; j < n; j++ {
-			rotated[i][j] = original[n-j-1][i] // Transpone y luego invierte las filas
+			rotated[i][j] = original[n-j-1][i]
 		}
 	}
 
 	return rotated
 }
 
-// Función para calcular estadísticas
 func calculateStatistics(matrix [][]int) map[string]interface{} {
-	maxVal := matrix[0][0]
-	minVal := matrix[0][0]
-	sum := 0
-	count := 0
-	Diagonal := true
+	max, min, sum := matrix[0][0], matrix[0][0], 0
+	isDiagonal := true
+	totalElements := 0
 
 	for i := range matrix {
 		for j := range matrix[i] {
-			val := matrix[i][j]
-			if val > maxVal {
-				maxVal = val
+			value := matrix[i][j]
+			if value > max {
+				max = value
 			}
-			if val < minVal {
-				minVal = val
+			if value < min {
+				min = value
 			}
-			sum += val
-			count++
-			if i != j && val != 0 {
-				Diagonal = false
+			sum += value
+			totalElements++
+			if i != j && value != 0 {
+				isDiagonal = false
 			}
 		}
 	}
 
-	promedio := float64(sum) / float64(count)
-	stats := map[string]interface{}{
-		"max":      maxVal,
-		"min":      minVal,
-		"sum":      sum,
-		"promedio": promedio,
-		"diagonal": Diagonal,
-	}
+	average := float64(sum) / float64(totalElements)
 
-	return stats
+	return map[string]interface{}{
+		"max":      max,
+		"min":      min,
+		"average":  average,
+		"sum":      sum,
+		"diagonal": isDiagonal,
+	}
 }
 
-// Prueba de la función de rotación de matrices
 func TestRotateMatrix(t *testing.T) {
 	original := [][]int{
 		{1, 2},
@@ -129,17 +124,13 @@ func TestRotateMatrix(t *testing.T) {
 	}
 }
 
-// Prueba de la API
 func TestAPI(t *testing.T) {
-	// Setup
 	app := fiber.New()
-	setUpRoutes(app) // Configurar rutas
+	setUpRoutes(app)
 
-	// Realizar solicitud
 	req, _ := http.NewRequest("GET", "/", nil)
 	resp, _ := app.Test(req, -1)
 
-	// Verificar la respuesta
 	if resp.StatusCode != 200 {
 		t.Errorf("Expected status code 200, got %d", resp.StatusCode)
 	}
