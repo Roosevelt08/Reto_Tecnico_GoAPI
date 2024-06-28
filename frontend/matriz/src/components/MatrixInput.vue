@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h2>Ingresar Matriz</h2>
+    <h2>Ingresar la Matriz</h2>
     <textarea v-model="matrixInput" rows="5"></textarea>
     <button @click="rotateMatrix">Rotar Matriz</button>
   </div>
