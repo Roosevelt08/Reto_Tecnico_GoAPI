@@ -24,7 +24,7 @@ export default {
     return {
       originalMatrix: [],
       rotatedMatrix: [],
-      statistics: null
+      statistics: {}
     };
   },
   methods: {

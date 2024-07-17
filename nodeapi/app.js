@@ -1,9 +1,9 @@
 const express = require('express');
 const app = express();
-const bodyParser = require('body-parser');
+const bodyParser = require('body-parser'); // analiza el cuerpo de las peticiones HTTP
 
 app.use(bodyParser.json());
-
+// Definir una ruta GET en la raíz del servidor
 app.get('/', (req, res) => {
   res.send('Hola desde Node.js Roosevelt!');
 });
@@ -16,12 +16,13 @@ app.post('/stats', (req, res) => {
   }
 
   const flatMatrix = rotatedMatrix.flat();
-  const max = Math.max(...flatMatrix);
-  const min = Math.min(...flatMatrix);
-  const suma = flatMatrix.reduce((acc, num) => acc + num, 0);
-  const promedio = suma / flatMatrix.length;
-  const diagonal = rotatedMatrix.every((row, i) => row.every((value, j) => (i === j) || (value === 0)));
+  const max = Math.max(...flatMatrix); // Calcular el máximo valor en la matriz aplanada
+  const min = Math.min(...flatMatrix); // Calcular el mínimo valor en la matriz aplanada
+  const suma = flatMatrix.reduce((acc, num) => acc + num, 0);// Calcular la suma de todos los valores en la matriz aplanada
+  const promedio = suma / flatMatrix.length; // Calcular el promedio de los valores en la matriz aplanada
+  const diagonal = rotatedMatrix.every((row, i) => row.every((value, j) => (i === j) || (value === 0))); // Determinar si la matriz es diagonal
 
+  // Crear un objeto con las estadísticas calculadas
   const stats = {
     max,
     min,
@@ -29,7 +30,7 @@ app.post('/stats', (req, res) => {
     suma,
     diagonal
   };
-
+  // Devolver las estadísticas como una respuesta JSON
   res.json(stats);
 });
 

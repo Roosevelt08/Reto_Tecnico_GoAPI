@@ -1,33 +1,36 @@
 package main
 
 import (
-	"log"
-	"net/http"
-	"reflect"
-	"testing"
+	"log"       // Importa el paquete log para loguear mensajes
+	"net/http"  // Permite manejar peticiones HTTP
+	"reflect"   // Importa reflect para uso en tests de comparación
+	"testing"   // Permite escribir y ejecutar tests unitarios
 
-	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/cors"
-	"github.com/gofiber/fiber/v2/middleware/logger"
+	"github.com/gofiber/fiber/v2"          // Importa Fiber, un framework web
+	"github.com/gofiber/fiber/v2/middleware/cors"   // Importa middleware CORS para Fiber
+	"github.com/gofiber/fiber/v2/middleware/logger" // Importa middleware de logging para Fiber
 )
 
 func main() {
-	app := fiber.New()
+	app := fiber.New() // Crea una nueva aplicación Fiber
 
+	// Middleware para CORS que permite solicitudes desde el origen específico
 	app.Use(cors.New(cors.Config{
 		AllowOrigins: "http://localhost:8081",
 		AllowHeaders: "Origin, Content-Type, Accept",
 	}))
 
-	app.Use(logger.New())
+	app.Use(logger.New())// Middleware para loguear las peticiones
 
+	// Define la ruta GET en la raíz que devuelve un simple string
 	app.Get("/", func(c *fiber.Ctx) error {
 		return c.SendString("Obtener solicitudes")
 	})
 
+	// Define la ruta POST para rotar matrices
 	app.Post("/rotate", func(c *fiber.Ctx) error {
 		var data map[string][][]int
-		if err := c.BodyParser(&data); err != nil {
+		if err := c.BodyParser(&data); err != nil { //error go
 			log.Println("Error en JSON:", err)
 			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "No se puede analizar la matriz"})
 		}
@@ -48,16 +51,18 @@ func main() {
 		return c.JSON(response)
 	})
 
-	log.Fatal(app.Listen(":8080"))
+	log.Fatal(app.Listen(":8080"))// Inicia el servidor en el puerto 8080
 }
 
 func setUpRoutes(app *fiber.App) {
+	// Configura una ruta GET adicional
 	app.Get("/", func(c *fiber.Ctx) error {
 		return c.SendString("rotar matrices")
 	})
 }
 
 func rotateMatrix(original [][]int) [][]int {
+	// Rotación de la matriz
 	if len(original) == 0 {
 		return original
 	}
@@ -77,6 +82,7 @@ func rotateMatrix(original [][]int) [][]int {
 }
 
 func calculateStatistics(matrix [][]int) map[string]interface{} {
+	// Calcula estadísticas de la matriz
 	max, min, sum := matrix[0][0], matrix[0][0], 0
 	isDiagonal := true
 	totalElements := 0
@@ -110,6 +116,7 @@ func calculateStatistics(matrix [][]int) map[string]interface{} {
 }
 
 func TestRotateMatrix(t *testing.T) {
+	// Test unitario para la función rotateMatrix
 	original := [][]int{
 		{1, 2},
 		{3, 4},
@@ -125,6 +132,7 @@ func TestRotateMatrix(t *testing.T) {
 }
 
 func TestAPI(t *testing.T) {
+	// Test unitario para la API
 	app := fiber.New()
 	setUpRoutes(app)
 
